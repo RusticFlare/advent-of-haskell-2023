@@ -33,4 +33,3 @@ allDigits ('n':'i':'n':'e':xs) = 9 : allDigits ('e':xs)
 allDigits (x:xs)
     | isDigit x = digitToInt x : allDigits xs
     | otherwise = allDigits xs
-
