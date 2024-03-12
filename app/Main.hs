@@ -19,7 +19,7 @@ calibrationValue2 :: String -> Int
 calibrationValue2 line = (head digits * 10) + last digits
     where digits = allDigits line
 
-allDigits :: [Char] -> [Int]
+allDigits :: String -> [Int]
 allDigits [] = []
 allDigits ('o':'n':'e':xs) = 1 : allDigits ('e':xs)
 allDigits ('t':'w':'o':xs) = 2 : allDigits ('o':xs)
