@@ -57,4 +57,4 @@ roundIsPossible :: Round -> Bool
 roundIsPossible r = colourIsPossible Red 12 r && colourIsPossible Green 13 r && colourIsPossible Blue 14 r
 
 colourIsPossible :: Colour -> Int -> Round -> Bool
-colourIsPossible colour maxCount r = (Map.findWithDefault 0 colour $ balls r) <= maxCount
+colourIsPossible colour maxCount r = Map.findWithDefault 0 colour (balls r) <= maxCount
