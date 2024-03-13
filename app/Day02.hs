@@ -54,13 +54,13 @@ gameIsPossible :: Game -> Bool
 gameIsPossible game = all roundIsPossible $ rounds game
 
 roundIsPossible :: Round -> Bool
-roundIsPossible round = redIsPossible round && greenIsPossible round && blueIsPossible round
+roundIsPossible r = redIsPossible r && greenIsPossible r && blueIsPossible r
 
 redIsPossible :: Round -> Bool
-redIsPossible round = (Map.findWithDefault 0 Red $ balls round) <= 12
+redIsPossible r = (Map.findWithDefault 0 Red $ balls r) <= 12
 
 greenIsPossible :: Round -> Bool
-greenIsPossible round = (Map.findWithDefault 0 Green $ balls round) <= 13
+greenIsPossible r = (Map.findWithDefault 0 Green $ balls r) <= 13
 
 blueIsPossible :: Round -> Bool
-blueIsPossible round = (Map.findWithDefault 0 Blue $ balls round) <= 14
+blueIsPossible r = (Map.findWithDefault 0 Blue $ balls r) <= 14
