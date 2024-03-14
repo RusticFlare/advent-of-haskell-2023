@@ -14,13 +14,13 @@ data Colour = Red | Green | Blue deriving (Enum, Eq, Ord, Show)
 newtype Round = Round { balls :: Map.Map Colour Int } deriving (Show)
 
 data Game = Game { gameNumber :: Int
-                 , rounds :: [Round] } deriving (Show)
+                , rounds :: [Round] } deriving (Show)
 
 day02Part1 :: String -> Int
 day02Part1 input = sum $ map (score . parseGame) $ lines input
 
 day02Part2 :: String -> Int
-day02Part2 _ = 0
+day02Part2 input = sum $ map (power . parseGame) $ lines input
 
 parseGame :: String -> Game
 parseGame line =
@@ -58,3 +58,6 @@ roundIsPossible r = colourIsPossible Red 12 r && colourIsPossible Green 13 r && 
 
 colourIsPossible :: Colour -> Int -> Round -> Bool
 colourIsPossible colour maxCount r = Map.findWithDefault 0 colour (balls r) <= maxCount
+
+power :: Game -> Int
+power game = product $ Map.elems $ foldl (Map.unionWith max) Map.empty $ map balls $ rounds game
