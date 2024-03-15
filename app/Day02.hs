@@ -1,7 +1,7 @@
 module Day02 where
 
-import Data.List.Split (splitOn)
 import qualified Data.Map as Map
+import Text.Parsec
 
 day02 :: IO ()
 day02 = do
@@ -23,27 +23,27 @@ day02Part2 :: String -> Int
 day02Part2 input = sum $ map (power . parseGame) $ lines input
 
 parseGame :: String -> Game
-parseGame line =
-    let gameText:roundsText:[] = splitOn ": " line
-        _:gameNumberText:[] = words gameText
-    in Game { gameNumber = read gameNumberText, rounds = map parseRound (splitOn "; " roundsText) }
+parseGame line = case parse gameParser "" line of
+    Right result ->  result
+    e -> error $ show e
 
+gameParser :: Parsec String st Game
+gameParser = toGame <$> (string "Game " *> intParser) <*> (string ": " *> roundParser `sepBy` string "; ")
+    where toGame n rs = Game { gameNumber = n, rounds = rs }
 
-parseRound :: String -> Round
-parseRound text =
-    let ballsText = splitOn ", " text
-    in Round { balls = Map.fromList (map parseBallCount ballsText) }
+roundParser :: Parsec String st Round
+roundParser = toRound <$> ballCountParser `sepBy` string ", "
+    where toRound ballList = Round { balls = Map.fromList ballList }
 
-parseBallCount :: String -> (Colour, Int)
-parseBallCount text =
-    let count:colour:[] = words text
-    in (parseColour colour, read count)
+ballCountParser :: Parsec String st (Colour, Int)
+ballCountParser = reverseTuple <$> intParser <*> (char ' ' *> colourParser)
+    where reverseTuple a b = (b, a)
 
-parseColour :: String -> Colour
-parseColour "blue" = Blue
-parseColour "green" = Green
-parseColour "red" = Red
-parseColour colour = error $ colour ++ " is not a valid Colour"
+colourParser :: Parsec String st Colour
+colourParser = try (Blue <$ string "blue") <|> try (Green <$ string "green") <|> (Red <$ string "red")
+
+intParser :: Parsec String st Int
+intParser = read <$> many1 digit
 
 score :: Game -> Int
 score game
