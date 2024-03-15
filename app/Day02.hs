@@ -29,10 +29,10 @@ parseGame line = case parse gameParser "" line of
     e -> error $ show e
 
 gameParser :: Parser Game
-gameParser = Game <$> (symbol "Game" *> natural) <*> (symbol ":" *> roundParser `sepBy` symbol ";")
+gameParser = Game <$> (symbol "Game" *> natural) <*> (colon *> semiSep roundParser)
 
 roundParser :: Parser Round
-roundParser = Round . Map.fromList <$> ballCountParser `sepBy` symbol ","
+roundParser = Round . Map.fromList <$> commaSep ballCountParser
 
 ballCountParser :: Parser (Colour, Integer)
 ballCountParser = reverseTuple <$> natural <*> colourParser
