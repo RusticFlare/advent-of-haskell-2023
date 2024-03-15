@@ -1,6 +1,6 @@
 module Parser where
 
-import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec (Parser)
 import qualified Text.Parsec.Token as P
 import Text.Parsec.Language (haskellDef)
 import Data.Functor.Identity (Identity)
@@ -13,3 +13,12 @@ symbol = P.symbol lexer
 
 natural :: Parser Integer
 natural = P.natural lexer
+
+colon :: Parser String
+colon = P.colon lexer
+
+commaSep :: Parser a -> Parser [a]
+commaSep = P.commaSep lexer
+
+semiSep :: Parser a -> Parser [a]
+semiSep = P.semiSep lexer
