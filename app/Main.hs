@@ -6,8 +6,7 @@ import Day02 (day02)
 main :: IO ()
 main = do
     putStrLn "Day?"
-    day <- getLine
-    runDay day
+    runDay =<< getLine
 
 runDay :: String -> IO ()
 runDay day = case read day :: Int of
