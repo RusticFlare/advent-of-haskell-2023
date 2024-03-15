@@ -2,11 +2,10 @@ module Parser where
 
 import Text.ParserCombinators.Parsec (Parser)
 import qualified Text.Parsec.Token as P
-import Text.Parsec.Language (haskellDef)
-import Data.Functor.Identity (Identity)
+import Text.Parsec.Language (emptyDef)
 
-lexer :: P.GenTokenParser String u Identity
-lexer = P.makeTokenParser haskellDef
+lexer :: P.TokenParser st
+lexer = P.makeTokenParser emptyDef
 
 symbol :: String -> Parser String
 symbol = P.symbol lexer
