@@ -1,7 +1,7 @@
 module Day02 where
 
 import qualified Data.Map as Map
-import Text.Parsec
+import Text.ParserCombinators.Parsec
 
 day02 :: IO ()
 day02 = do
@@ -27,20 +27,20 @@ parseGame line = case parse gameParser "" line of
     Right result ->  result
     e -> error $ show e
 
-gameParser :: Parsec String st Game
+gameParser :: Parser Game
 gameParser = Game <$> (string "Game " *> intParser) <*> (string ": " *> roundParser `sepBy` string "; ")
 
-roundParser :: Parsec String st Round
+roundParser :: Parser Round
 roundParser = Round . Map.fromList <$> ballCountParser `sepBy` string ", "
 
-ballCountParser :: Parsec String st (Colour, Int)
+ballCountParser :: Parser (Colour, Int)
 ballCountParser = reverseTuple <$> intParser <*> (char ' ' *> colourParser)
     where reverseTuple a b = (b, a)
 
-colourParser :: Parsec String st Colour
-colourParser = try (Blue <$ string "blue") <|> try (Green <$ string "green") <|> (Red <$ string "red")
+colourParser :: Parser Colour
+colourParser = (Blue <$ string "blue") <|> (Green <$ string "green") <|> (Red <$ string "red")
 
-intParser :: Parsec String st Int
+intParser :: Parser Int
 intParser = read <$> many1 digit
 
 score :: Game -> Int
