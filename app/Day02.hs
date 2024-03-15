@@ -28,12 +28,10 @@ parseGame line = case parse gameParser "" line of
     e -> error $ show e
 
 gameParser :: Parsec String st Game
-gameParser = toGame <$> (string "Game " *> intParser) <*> (string ": " *> roundParser `sepBy` string "; ")
-    where toGame n rs = Game { gameNumber = n, rounds = rs }
+gameParser = Game <$> (string "Game " *> intParser) <*> (string ": " *> roundParser `sepBy` string "; ")
 
 roundParser :: Parsec String st Round
-roundParser = toRound <$> ballCountParser `sepBy` string ", "
-    where toRound ballList = Round { balls = Map.fromList ballList }
+roundParser = Round . Map.fromList <$> ballCountParser `sepBy` string ", "
 
 ballCountParser :: Parsec String st (Colour, Int)
 ballCountParser = reverseTuple <$> intParser <*> (char ' ' *> colourParser)
