@@ -18,7 +18,7 @@ data Colour = Red | Green | Blue deriving (Enum, Eq, Ord, Show)
 newtype Round = Round { balls :: Map.Map Colour Integer } deriving (Show)
 
 data Game = Game { gameNumber :: Integer
-                , rounds :: [Round] } deriving (Show)
+                 , rounds :: [Round] } deriving (Show)
 
 day02Part1 :: [Game] -> Integer
 day02Part1 = sumOn' score
