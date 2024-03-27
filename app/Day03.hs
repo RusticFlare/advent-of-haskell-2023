@@ -12,11 +12,6 @@ import Data.Maybe (mapMaybe)
 day03 :: IO ()
 day03 = do
    input <- readFile "inputs/Day03.txt"
-   let symbols = symbolLocations input
-   print symbols
-   let numbers = nums input
-   print numbers
-   print $ map (score symbols) numbers
    print $ "Part 1: " ++ show (day03Part1 input)
    print $ "Part 2: " ++ show (day03Part2 input)
 
