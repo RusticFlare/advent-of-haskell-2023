@@ -16,6 +16,9 @@ natural = P.natural lexer
 colon :: Parser String
 colon = P.colon lexer
 
+pipe :: Parser String
+pipe = symbol "|"
+
 commaSep :: Parser a -> Parser [a]
 commaSep = P.commaSep lexer
 
