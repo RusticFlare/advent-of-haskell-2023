@@ -25,7 +25,7 @@ day04Part2 cs = sum $ Map.elems $ foldl processCard Map.empty cs
 
 data Card = Card { cardNumber :: Integer
                  , winningNumbers :: Set.Set Integer
-                 , yourNumbers :: [Integer] } deriving(Show)
+                 , yourNumbers :: [Integer] } deriving (Show)
 
 -- Soloutions
 
