@@ -19,7 +19,7 @@ day04Part1 :: [Card] -> Integer
 day04Part1 = sumOn' points
 
 day04Part2 :: [Card] -> Integer
-day04Part2 cards = sum $ Map.elems $ foldl processCard Map.empty cards
+day04Part2 cs = sum $ Map.elems $ foldl processCard Map.empty cs
 
 -- Types
 
@@ -30,14 +30,18 @@ data Card = Card { cardNumber :: Integer
 -- Soloutions
 
 processCard :: Data.Map Integer Integer -> Card -> Data.Map Integer Integer
-processCard m c = addScratchcards (cardNumber c) (toInteger $ yourWinningNumbersCount c) (Map.insertWith (+) (cardNumber c) 1 m)
+processCard m c = addScratchcards n w m'
+    where n = cardNumber c
+          w = toInteger $ yourWinningNumbersCount c
+          m' = Map.insertWith (+) n 1 m
 
 addScratchcards :: Integer -> Integer -> Data.Map Integer Integer -> Data.Map Integer Integer
 addScratchcards _ 0 m = m
-addScratchcards i p m = addScratchcards i (p-1) (Map.insertWith (+) (i + p) (fromJust $ Map.lookup i m) m)
+addScratchcards i p m = addScratchcards i (p-1) m'
+    where m' = Map.insertWith (+) (i + p) (fromJust $ Map.lookup i m) m
 
 points :: Card -> Integer
-points card = case yourWinningNumbersCount card of
+points c = case yourWinningNumbersCount c of
     0 -> 0
     x -> 2^(x-1)
 
