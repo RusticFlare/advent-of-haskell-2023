@@ -53,7 +53,7 @@ yourWinningNumbersCount Card{winningNumbers=ws,yourNumbers=ys} = length $ filter
 parseCard :: String -> Card
 parseCard line = case parse cardParser "" line of
     Right result -> result
-    e -> error $ show e
+    Left e -> error $ show e
 
 cardParser :: Parser Card
 cardParser = Card <$> (symbol "Card" *> natural) <*> (colon *> (Set.fromList <$> many natural)) <*> (pipe *> many natural)
