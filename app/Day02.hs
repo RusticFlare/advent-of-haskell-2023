@@ -29,7 +29,7 @@ day02Part2 = sumOn' power
 parseGame :: String -> Game
 parseGame line = case parse gameParser "" line of
     Right result -> result
-    e -> error $ show e
+    Left e -> error $ show e
 
 gameParser :: Parser Game
 gameParser = Game <$> (symbol "Game" *> natural) <*> (colon *> semiSep roundParser)
