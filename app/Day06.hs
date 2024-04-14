@@ -3,18 +3,17 @@ module Day06 where
 import Text.ParserCombinators.Parsec
 import Parser
 import Data.Foldable.Extra (productOn')
+import Data.Char (isSpace)
 day06 :: IO ()
 day06 = do
    input <- readFile "inputs/Day06.txt"
-   let races = parseRaces input
-   print $ "Part 1: " ++ show (day06Part1 races)
-   print $ "Part 2: " ++ show (day06Part2 races)
+   let races1 = parseRaces input
+   print $ "Part 1: " ++ show (solve races1)
+   let races2 = parseRaces $ filter (not . isSpace) input
+   print $ "Part 2: " ++ show (solve races2)
 
-day06Part1 :: [Race] -> Integer
-day06Part1 = productOn' numberOfWaysYouCanBeatTheRecord
-
-day06Part2 :: a -> Integer
-day06Part2 _ = 0
+solve :: [Race] -> Integer
+solve = productOn' numberOfWaysYouCanBeatTheRecord
 
 -- Types
 
@@ -30,11 +29,12 @@ numberOfWaysYouCanBeatTheRecord race =
         d = fromInteger $ distance race
         isWin' = isWin race
         a = t / 2
-        b = sqrt ((t ** 2) - (4 * d)) / 2
+        b = sqrt ((t ** 2) - (4 * d)) / (2 :: Double)
         x = a + b
         y = a - b
         low = ceiling $ min x y
         high = floor $ max x y
+        -- Make sure these aren't draws
         low' = if isWin' low then low else low + 1
         high' = if isWin' high then high else high - 1
     in
