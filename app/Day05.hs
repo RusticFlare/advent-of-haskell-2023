@@ -8,15 +8,12 @@ day05 :: IO ()
 day05 = do
    input <- readFile "inputs/Day05.txt"
    let almanac1 = parseAlmanac1 input
-   let almanac2 = parseAlmanac2 input
    print $ "Part 1: " ++ show (solve almanac1)
+   let almanac2 = parseAlmanac2 input
    print $ "Part 2: " ++ show (solve almanac2)
 
 solve :: Almanac -> Integer
 solve almanac = head $ fromRanges $ locations almanac
-
-day05Part2 :: Almanac -> Integer
-day05Part2 _ = 0
 
 -- Types
 
@@ -59,11 +56,6 @@ applyRange almanacRange sources = (remainder, destinations)
           destinations = shiftRanges s inter
 
 -- Parser
-
-parseText :: Parser a -> String -> a
-parseText parser text = case parse parser "" text of
-    Right result -> result
-    Left e -> error $ show e
 
 parseAlmanac1 :: String -> Almanac
 parseAlmanac1 = parseText almanac1Parser
