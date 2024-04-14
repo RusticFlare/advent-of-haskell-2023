@@ -2,9 +2,7 @@ module Day05 where
 
 import Text.ParserCombinators.Parsec
 import Parser
-import Control.Monad (msum)
-import Data.Maybe (fromMaybe)
-import Data.Foldable (Foldable(foldl'))
+import Data.Range
 
 day05 :: IO ()
 day05 = do
@@ -14,21 +12,15 @@ day05 = do
    print $ "Part 2: " ++ show (day05Part2 almanac)
 
 day05Part1 :: Almanac -> Integer
-day05Part1 almanac = minimum $ locations almanac
+day05Part1 almanac = head $ fromRanges $ locations almanac
 
 day05Part2 :: Almanac -> Integer
 day05Part2 _ = 0
 
 -- Types
 
-data Almanac = Almanac { seeds :: [Integer]
+data Almanac = Almanac { seeds :: [Range Integer]
                        , maps :: [AlmanacMap] } deriving (Show)
-
-data Almanac2 = Almanac2 { seedRanges :: [CategoryRange]
-                         , maps2 :: [AlmanacMap] } deriving (Show)
-
-data CategoryRange = CategoryRange { start :: Integer
-                                   , categoryRangeLength :: Integer } deriving (Show)
 
 data AlmanacMap = AlmanacMap { sourceCategory :: String
                              , destinationCategory :: String
@@ -38,25 +30,32 @@ data AlmanacRange = AlmanacRange { destinationStart :: Integer
                                  , sourceStart :: Integer
                                  , rangeLength :: Integer } deriving (Show)
 
+sourceRanges :: AlmanacRange -> [Range Integer]
+sourceRanges almanacRange = [sourceStart almanacRange +=> rangeLength almanacRange]
+
+shift :: AlmanacRange -> Integer
+shift almanacRange = destinationStart almanacRange - sourceStart almanacRange
+
 -- Soloutions
 
-locations :: Almanac -> [Integer]
-locations almanac = map (seedLocation almanac) (seeds almanac)
+locations :: Almanac -> [Range Integer]
+locations a = foldl applyMap (seeds a) (maps a)
 
-seedLocation :: Almanac -> Integer -> Integer
-seedLocation almanac seed = foldl' applyMap seed $ maps almanac
+applyMap :: [Range Integer] -> AlmanacMap -> [Range Integer]
+applyMap sources almanacMap = applyRanges (ranges almanacMap) sources
 
-applyMap :: Integer ->  AlmanacMap -> Integer
-applyMap input almanacMap = fromMaybe input $ msum appliedRanges
-    where appliedRanges = map (applyRange input) $ ranges almanacMap
+applyRanges :: [AlmanacRange] -> [Range Integer] -> [Range Integer]
+applyRanges [] sources = sources
+applyRanges (r:rs) sources = union destinations $ applyRanges rs remainder
+    where (remainder, destinations) = applyRange r sources
 
-applyRange :: Integer -> AlmanacRange -> Maybe Integer
-applyRange input range
-    | input >= s && input < s + l = Just (d - s + input)
-    | otherwise = Nothing
-    where s = sourceStart range
-          l = rangeLength range
-          d = destinationStart range
+applyRange :: AlmanacRange -> [Range Integer] -> ([Range Integer], [Range Integer])
+applyRange almanacRange sources = (remainder, destinations)
+    where sr = sourceRanges almanacRange
+          inter = intersection sr sources
+          remainder = difference sources inter
+          s = shift almanacRange
+          destinations = shiftRanges s inter
 
 -- Parser
 
@@ -68,14 +67,14 @@ parseText parser text = case parse parser "" text of
 parseAlmanac :: String -> Almanac
 parseAlmanac = parseText almanacParser
 
-parseAlmanac2 :: String -> Almanac2
+parseAlmanac2 :: String -> Almanac
 parseAlmanac2 = parseText almanac2Parser
 
 almanacParser :: Parser Almanac
-almanacParser = Almanac <$> (symbol "seeds:" *> many natural) <*> many almanacMapParser
+almanacParser = Almanac <$> (symbol "seeds:" *> many (SingletonRange <$> natural)) <*> many almanacMapParser
 
-almanac2Parser :: Parser Almanac2
-almanac2Parser = Almanac2 <$> (symbol "seeds:" *> many categoryRangeParser) <*> many almanacMapParser
+almanac2Parser :: Parser Almanac
+almanac2Parser = Almanac <$> (symbol "seeds:" *> many ((+=>) <$> natural <*> natural)) <*> many almanacMapParser
 
 almanacMapParser :: Parser AlmanacMap
 almanacMapParser = AlmanacMap <$> identifier <*> (symbol "-to-" *> identifier) <*> (symbol "map:" *> many almanacRangeParser)
@@ -83,5 +82,10 @@ almanacMapParser = AlmanacMap <$> identifier <*> (symbol "-to-" *> identifier) <
 almanacRangeParser :: Parser AlmanacRange
 almanacRangeParser = AlmanacRange <$> natural <*> natural <*> natural
 
-categoryRangeParser :: Parser CategoryRange
-categoryRangeParser = CategoryRange <$> natural <*> natural
+-- Helper
+
+(+=>) :: Num a => a -> a -> Range a
+(+=>) s l = s +=* (s + l)
+
+shiftRanges :: Num a => a -> [Range a] -> [Range a]
+shiftRanges s = map $ fmap (+s)
