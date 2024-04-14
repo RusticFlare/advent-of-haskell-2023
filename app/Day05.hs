@@ -7,12 +7,13 @@ import Data.Range
 day05 :: IO ()
 day05 = do
    input <- readFile "inputs/Day05.txt"
-   let almanac = parseAlmanac input
-   print $ "Part 1: " ++ show (day05Part1 almanac)
-   print $ "Part 2: " ++ show (day05Part2 almanac)
+   let almanac1 = parseAlmanac1 input
+   let almanac2 = parseAlmanac2 input
+   print $ "Part 1: " ++ show (solve almanac1)
+   print $ "Part 2: " ++ show (solve almanac2)
 
-day05Part1 :: Almanac -> Integer
-day05Part1 almanac = head $ fromRanges $ locations almanac
+solve :: Almanac -> Integer
+solve almanac = head $ fromRanges $ locations almanac
 
 day05Part2 :: Almanac -> Integer
 day05Part2 _ = 0
@@ -64,14 +65,14 @@ parseText parser text = case parse parser "" text of
     Right result -> result
     Left e -> error $ show e
 
-parseAlmanac :: String -> Almanac
-parseAlmanac = parseText almanacParser
+parseAlmanac1 :: String -> Almanac
+parseAlmanac1 = parseText almanac1Parser
 
 parseAlmanac2 :: String -> Almanac
 parseAlmanac2 = parseText almanac2Parser
 
-almanacParser :: Parser Almanac
-almanacParser = Almanac <$> (symbol "seeds:" *> many (SingletonRange <$> natural)) <*> many almanacMapParser
+almanac1Parser :: Parser Almanac
+almanac1Parser = Almanac <$> (symbol "seeds:" *> many (SingletonRange <$> natural)) <*> many almanacMapParser
 
 almanac2Parser :: Parser Almanac
 almanac2Parser = Almanac <$> (symbol "seeds:" *> many ((+=>) <$> natural <*> natural)) <*> many almanacMapParser
