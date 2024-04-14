@@ -29,18 +29,18 @@ data AlmanacRange = AlmanacRange { destinationStart :: Integer
                                  , rangeLength :: Integer } deriving (Show)
 
 sourceRanges :: AlmanacRange -> [Range Integer]
-sourceRanges almanacRange = [sourceStart almanacRange +=> rangeLength almanacRange]
+sourceRanges AlmanacRange{sourceStart=s, rangeLength=l} = [s +=> l]
 
 shift :: AlmanacRange -> Integer
-shift almanacRange = destinationStart almanacRange - sourceStart almanacRange
+shift AlmanacRange{destinationStart=d, sourceStart=s} = d - s
 
 -- Soloutions
 
 locations :: Almanac -> [Range Integer]
-locations a = foldl applyMap (seeds a) (maps a)
+locations Almanac{seeds=ss, maps=ms} = foldl applyMap ss ms
 
 applyMap :: [Range Integer] -> AlmanacMap -> [Range Integer]
-applyMap sources almanacMap = applyRanges (ranges almanacMap) sources
+applyMap sources AlmanacMap{ranges=rs} = applyRanges rs sources
 
 applyRanges :: [AlmanacRange] -> [Range Integer] -> [Range Integer]
 applyRanges [] sources = sources
