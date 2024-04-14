@@ -6,6 +6,7 @@ import Day03 (day03)
 import Day04 (day04)
 import Day05 (day05)
 import Day06 (day06)
+import Day07 (day07)
 
 main :: IO ()
 main = do
@@ -20,4 +21,5 @@ runDay day = case read day :: Int of
     4 -> day04
     5 -> day05
     6 -> day06
+    7 -> day07
     _ -> error $ day ++ " is not a valid day"
