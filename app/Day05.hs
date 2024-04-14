@@ -24,6 +24,12 @@ day05Part2 _ = 0
 data Almanac = Almanac { seeds :: [Integer]
                        , maps :: [AlmanacMap] } deriving (Show)
 
+data Almanac2 = Almanac2 { seedRanges :: [CategoryRange]
+                         , maps2 :: [AlmanacMap] } deriving (Show)
+
+data CategoryRange = CategoryRange { start :: Integer
+                                   , categoryRangeLength :: Integer } deriving (Show)
+
 data AlmanacMap = AlmanacMap { sourceCategory :: String
                              , destinationCategory :: String
                              , ranges :: [AlmanacRange] } deriving (Show)
@@ -62,11 +68,20 @@ parseText parser text = case parse parser "" text of
 parseAlmanac :: String -> Almanac
 parseAlmanac = parseText almanacParser
 
+parseAlmanac2 :: String -> Almanac2
+parseAlmanac2 = parseText almanac2Parser
+
 almanacParser :: Parser Almanac
 almanacParser = Almanac <$> (symbol "seeds:" *> many natural) <*> many almanacMapParser
+
+almanac2Parser :: Parser Almanac2
+almanac2Parser = Almanac2 <$> (symbol "seeds:" *> many categoryRangeParser) <*> many almanacMapParser
 
 almanacMapParser :: Parser AlmanacMap
 almanacMapParser = AlmanacMap <$> identifier <*> (symbol "-to-" *> identifier) <*> (symbol "map:" *> many almanacRangeParser)
 
 almanacRangeParser :: Parser AlmanacRange
 almanacRangeParser = AlmanacRange <$> natural <*> natural <*> natural
+
+categoryRangeParser :: Parser CategoryRange
+categoryRangeParser = CategoryRange <$> natural <*> natural
