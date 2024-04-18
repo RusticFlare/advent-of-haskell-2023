@@ -30,6 +30,9 @@ identifier = P.identifier lexer
 colon :: Parser String
 colon = P.colon lexer
 
+comma :: Parser String
+comma = P.comma lexer
+
 pipe :: Parser String
 pipe = symbol "|"
 
@@ -38,3 +41,6 @@ commaSep = P.commaSep lexer
 
 semiSep :: Parser a -> Parser [a]
 semiSep = P.semiSep lexer
+
+parens :: Parser a -> Parser a
+parens = P.parens lexer
