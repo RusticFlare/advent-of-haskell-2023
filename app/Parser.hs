@@ -27,6 +27,9 @@ float = either fromInteger id <$> P.naturalOrFloat lexer
 identifier :: Parser String
 identifier = P.identifier lexer
 
+lexeme :: Parser a -> Parser a
+lexeme = P.lexeme lexer
+
 colon :: Parser String
 colon = P.colon lexer
 
