@@ -1,7 +1,7 @@
 module Day08 where
 
-import Text.ParserCombinators.Parsec
-import Parser
+import Text.ParserCombinators.Parsec ( Parser, (<|>), many, anyChar )
+import Parser ( comma, lexeme, parens, parseText, symbol )
 import qualified Data.Map as Map
 
 day08 :: IO ()
@@ -11,16 +11,22 @@ day08 = do
    print $ "Part 1: " ++ show (part1 documents)
    print $ "Part 2: " ++ show (part2 documents)
 
-part1 :: Documents (Char, Char, Char) -> Int
-part1 = steps ('A', 'A', 'A')
+part1 :: Documents -> Int
+part1  d = steps d (('Z', 'Z', 'Z')==) ('A', 'A', 'A')
 
-part2 :: a -> Integer
-part2 _ = 0
+part2 :: Documents -> Int
+part2 d = foldr (lcm . steps d (locationEndsWith 'Z')) 1 (filter (locationEndsWith 'A') $ locations d)
 
 -- Types
 
-data Documents a = Documents { instuctions :: [Map.Map a (a, a) -> a -> a]
-                             , network :: Map.Map a (a, a) }
+data Documents = Documents { instuctions :: [Map.Map Location (Location, Location) -> Location -> Location]
+                           , network :: Map.Map Location (Location, Location) }
+
+turns :: Documents -> [Location -> Location]
+turns Documents{instuctions=is, network=n} = [ i n | i <- is ]
+
+locations :: Documents -> [Location]
+locations Documents{network=n} = Map.keys n
 
 type Location = (Char, Char, Char)
 
@@ -32,17 +38,26 @@ r m s = snd $ m Map.! s
 
 -- Soloutions
 
-steps :: Location -> Documents Location -> Int
-steps ('Z', 'Z', 'Z') _ = 0
-steps s Documents{instuctions=(i:is), network=n} = 1 + steps (i n s) (Documents is n)
-steps _ Documents{instuctions=[]} = error "Empty instuctions"
+
+iterate' :: [a -> a] -> a -> [a]
+iterate' [] _ =  []
+iterate' (f:fs) x =  x : iterate' fs (f x)
+
+path :: Documents -> Location -> [Location]
+path docs = iterate' $ turns docs
+
+steps :: Documents -> (Location -> Bool) -> Location -> Int
+steps documents endCondition start = length $ takeWhile (not . endCondition) (path documents start)
+
+locationEndsWith :: Char -> Location -> Bool
+locationEndsWith c (_, _, z) = c == z
 
 -- Parser
 
-parseDocuments :: String -> Documents Location
+parseDocuments :: String -> Documents
 parseDocuments = parseText documentsParser
 
-documentsParser :: Parser (Documents Location)
+documentsParser :: Parser Documents
 documentsParser = (Documents . cycle <$> many instuctionParser) <*> networkParser
 
 instuctionParser :: Ord a => Parser (Map.Map a (a, a) -> a -> a)
