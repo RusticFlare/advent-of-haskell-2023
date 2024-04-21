@@ -38,7 +38,6 @@ r m s = snd $ m Map.! s
 
 -- Soloutions
 
-
 iterate' :: [a -> a] -> a -> [a]
 iterate' [] _ =  []
 iterate' (f:fs) x =  x : iterate' fs (f x)
