@@ -3,6 +3,7 @@ module Day08 where
 import Text.ParserCombinators.Parsec ( Parser, (<|>), many, anyChar )
 import Parser ( comma, lexeme, parens, parseText, symbol )
 import qualified Data.Map as Map
+import Data.Function ((&))
 
 day08 :: IO ()
 day08 = do
@@ -15,7 +16,7 @@ part1 :: Documents -> Int
 part1  d = steps d (('Z', 'Z', 'Z')==) ('A', 'A', 'A')
 
 part2 :: Documents -> Int
-part2 d = foldr (lcm . steps d (locationEndsWith 'Z')) 1 (filter (locationEndsWith 'A') $ locations d)
+part2 d = foldr (lcm . steps d (locationEndsWith 'Z')) 1 (filter (locationEndsWith 'A') $ d & locations)
 
 -- Types
 
@@ -38,12 +39,8 @@ r m s = snd $ m Map.! s
 
 -- Soloutions
 
-iterate' :: [a -> a] -> a -> [a]
-iterate' [] _ =  []
-iterate' (f:fs) x =  x : iterate' fs (f x)
-
 path :: Documents -> Location -> [Location]
-path docs = iterate' $ turns docs
+path docs location = scanl (&) location (docs & turns)
 
 steps :: Documents -> (Location -> Bool) -> Location -> Int
 steps documents endCondition start = length $ takeWhile (not . endCondition) (path documents start)
