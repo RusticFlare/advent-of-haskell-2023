@@ -14,15 +14,23 @@ day09 = do
 part1 :: [[Integer]] -> Integer
 part1 = sumOn' nextValue
 
-part2 :: a -> Int
-part2 _ = 0
+part2 :: [[Integer]] -> Integer
+part2 = sumOn' previousValue
 
 -- Soloutions
 
 nextValue :: [Integer] -> Integer
 nextValue vs
     | all (0==) vs = 0
-    | otherwise = last vs + nextValue (mapAdjacent (flip (-)) vs)
+    | otherwise = last vs + nextValue (differences vs)
+
+previousValue :: [Integer] -> Integer
+previousValue vs
+    | all (0==) vs = 0
+    | otherwise = head vs - previousValue (differences vs)
+
+differences :: [Integer] -> [Integer]
+differences = mapAdjacent (flip (-))
 
 mapAdjacent :: (a -> a -> b) -> [a] -> [b]
 mapAdjacent f (x1:x2:xs) = f x1 x2 : mapAdjacent f (x2:xs)
