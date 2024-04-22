@@ -13,7 +13,7 @@ day08 = do
    print $ "Part 2: " ++ show (part2 documents)
 
 part1 :: Documents -> Int
-part1  d = steps d (('Z', 'Z', 'Z')==) ('A', 'A', 'A')
+part1 d = steps d (('Z', 'Z', 'Z')==) ('A', 'A', 'A')
 
 part2 :: Documents -> Int
 part2 d = foldr (lcm . steps d (locationEndsWith 'Z')) 1 (filter (locationEndsWith 'A') $ d & locations)
