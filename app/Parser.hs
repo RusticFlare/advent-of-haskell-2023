@@ -21,6 +21,9 @@ operator = P.operator lexer
 natural :: Parser Integer
 natural = P.natural lexer
 
+integer :: Parser Integer
+integer = P.integer lexer
+
 float :: Parser Double
 float = either fromInteger id <$> P.naturalOrFloat lexer
 
