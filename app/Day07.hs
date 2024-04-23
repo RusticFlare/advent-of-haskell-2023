@@ -1,7 +1,7 @@
 module Day07 where
 
-import Text.ParserCombinators.Parsec
-import Parser
+import Text.ParserCombinators.Parsec ( (<|>), many, Parser )
+import Parser ( parseText, symbol, natural )
 import Data.List (sort, group, partition)
 
 day07 :: IO ()
